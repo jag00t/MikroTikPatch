@@ -1,0 +1,33 @@
+name: Build RouterOS 7.10.2 x86
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    env:
+      VERSION: "7.10.2"
+      ARCH: "x86"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Prepare dummy package
+        run: |
+          touch routeros-${{ env.VERSION }}-${{ env.ARCH }}.npk
+
+      - name: Sign package
+        env:
+          CUSTOM_LICENSE_PRIVATE_KEY: ${{ secrets.CUSTOM_LICENSE_PRIVATE_KEY }}
+          CUSTOM_LICENSE_PUBLIC_KEY: ${{ secrets.CUSTOM_LICENSE_PUBLIC_KEY }}
+          CUSTOM_NPK_SIGN_PRIVATE_KEY: ${{ secrets.CUSTOM_NPK_SIGN_PRIVATE_KEY }}
+          CUSTOM_NPK_SIGN_PUBLIC_KEY: ${{ secrets.CUSTOM_NPK_SIGN_PUBLIC_KEY }}
+        run: |
+          python npk.py sign routeros-${{ env.VERSION }}-${{ env.ARCH }}.npk routeros-${{ env.VERSION }}-${{ env.ARCH }}-signed.npk
+          ls -l routeros-${{ env.VERSION }}-${{ env.ARCH }}-signed.npk
