@@ -150,6 +150,7 @@ jobs:
       if: steps.get_latest.outputs.has_new_version == 'true'  && steps.get_latest.outputs.has_patched_npk == 'true'
       run: |
         sudo unzip netinstall.zip
+        ls
         sudo -E python3 patch.py netinstall netinstall.exe
         sudo zip netinstall-$LATEST_VERSION.zip ./netinstall.exe
         sudo tar -xvf netinstall.tar.gz
